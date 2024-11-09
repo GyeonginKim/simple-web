@@ -1,4 +1,4 @@
-name: Workflow Commands
+name: Workflow Commands(loggroup)
 on: [push]
 
 jobs:
@@ -20,3 +20,4 @@ jobs:
           echo "Inside group 2"
           echo "Inside group 3"
           echo "::endgroup::"
+          echo "outside log"
