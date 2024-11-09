@@ -1,0 +1,12 @@
+name: practice-workflow
+on: [push]
+jobs:
+  shell-cmd-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo python --version
+        run: echo "python --version"
+      - name: multiple line cmd
+        run: |
+          python --version
+          pip --version
