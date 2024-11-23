@@ -20,7 +20,9 @@ jobs:
       DOCKER_TAG: ${{ github.run_number }}
 
     steps:
-
+      - name: 0. Download source
+        uses: actions/checkout@v4
+        
       - name: 1.Docker Image Build
         run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/simple-web:${{ env.DOCKER_TAG }} -f ./Dockerfile
 
