@@ -1,4 +1,4 @@
-#2
+#3
 name: simple-web
 
 on:
@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: 0. Download source
         uses: actions/checkout@v4
-        
+
       - name: 1.Docker Image Build
         run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/simple-web:${{ env.DOCKER_TAG }} -f ./Dockerfile
 
@@ -37,3 +37,31 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/simple-web:${{ env.DOCKER_TAG }}
       
+            # 서비스 리포지토리 체크아웃
+      - name: 4.서비스 리포지토리 체크아웃
+        uses: actions/checkout@v4
+        with:
+          repository: oscarkim/simple-service   # 바꾸기
+          ref: main # 바꾸기
+          path: .
+      
+      # 이미지 태그 업데이트
+      - name: 5.쿠버네티스 매니페스트 파일 이미지 태그 업데이트
+        run: |
+          # 파일이 존재하는지 확인
+          ls -la
+          # 현재 파일 내용 확인
+          cat simple-deploy.yaml
+          sed -i "s|image: ${{ secrets.DOCKER_USERNAME }}\/simple-web.*|image: ${{ secrets.DOCKER_USERNAME }}\/simple-web:${{ env.DOCKER_TAG }}|g" simple-loadbalancer.yaml
+          # 변경된 내용 확인
+          cat simple-deploy.yaml
+      
+      # 변경사항 커밋 및 푸시
+      - name: 6.서비스 리포지토리 변경사항 커밋 및 푸시
+        run: |
+          git config --global user.name 'GyeonginKim' # 바꾸기
+          git config --global user.email 'oscar.kim@live.co.kr' # 바꾸기
+          git commit -am "Update image tag to ${{ env.DOCKER_TAG }}"
+          git remote set-url origin https://${{ secrets.PAT }}@github.com/GyeonginKim/simple-service.git # 바꾸기 
+          
+          git push origin main
